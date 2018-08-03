@@ -4,10 +4,14 @@ package com.example.mannai.sos;
 import cz.msebera.android.httpclient.Header;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.provider.Telephony;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
@@ -50,16 +54,39 @@ public class ItemListActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     ArrayList<DummyContent.DummyItem> items;
+    SimpleItemRecyclerViewAdapter adapter ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
+        final SwipeRefreshLayout pullToRefresh = findViewById(R.id.pullToRefresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //loadRequests(); // your code
+                pullToRefresh.setRefreshing(false);
+            }
+        });
+
+        //IntentFilter filter = new IntentFilter();
+        //filter.addAction(getPackageName() + "android.net.conn.CONNECTIVITY_CHANGE");
+
+        //SmsListener myReceiver = new SmsListener();
+        ////registerReceiver(myReceiver, filter);
+
+
+        recyclerView = findViewById(R.id.item_list);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        //toolbar.setTitle(getTitle());
+        //getSupportActionBar().setIcon(R.drawable.ingath1);
         items = new ArrayList<DummyContent.DummyItem>();
+        adapter = new SimpleItemRecyclerViewAdapter(items);
+        recyclerView.setAdapter(adapter);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,10 +96,12 @@ public class ItemListActivity extends AppCompatActivity {
             }
         });
 
-         recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),1);
+        recyclerView.addItemDecoration(dividerItemDecoration);
        // setupRecyclerView((RecyclerView) recyclerView);
-loadRequests();
+        loadRequests();
         if (findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -105,12 +134,12 @@ loadRequests();
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
+            holder.mIdView.setText(mValues.get(position).req_id);
+            //DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
             //dateFormat.format("yyyy-MM-dd hh:mm:ss a", new java.util.Date());
-            String x = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(mValues.get(position).requested_at);
+            //String x = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(mValues.get(position).requested_at);
             //holder.mContentView.setText(dateFormat.format(mValues.get(position).requested_at));
-            holder.mContentView.setText(x);
+            holder.mContentView.setText(mValues.get(position).requested_at);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -162,7 +191,10 @@ loadRequests();
     }
 
     void loadRequests(){
+        Log.i("RX","loadRequests");
         //loading = true;
+        //items = new ArrayList<DummyContent.DummyItem>();
+        //DummyContent.clearItems();
         WSHttpClient client = new WSHttpClient(getApplicationContext());
         RequestParams params = new RequestParams();
         //params.put("un", un);
@@ -213,12 +245,13 @@ loadRequests();
                             String req = c.getString("req_id");
                             String stat = c.getString("status");
                             String assignee = c.getString("assignee");
+                            String requested = c.getString("requested_at");
                             double lat = c.getDouble("latitude");
                             double lng = c.getDouble("longitude");
                             boolean liked = false;
                             Log.i("DBX","load: "+dob);
                             u[i]= new DummyContent.DummyItem(id,name,contact,dob,condition,location,blood,
-                                    medications,allergies,weigt,remarks,lat,lng,req,stat,assignee);
+                                    medications,allergies,weigt,remarks,lat,lng,req,stat,assignee,requested);
                             // new DummyItem(String.valueOf(position), "Name" , "contact", "dob","condition","location");
 
                             //usr=username;
@@ -239,8 +272,7 @@ loadRequests();
                 //else if ( list.getFooterViewsCount()==0)
                 //	list.addFooterView(footerView);
 
-                //adapter.notifyDataSetChanged();
-                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(items));
+                adapter.notifyDataSetChanged();
                 //refresh=false;
 
                 //loading = false;
@@ -301,4 +333,6 @@ loadRequests();
 
 
     }
+
+
 }

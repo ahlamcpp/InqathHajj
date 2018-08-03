@@ -58,16 +58,17 @@
     <TextView
 
         android:id="@+id/status"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
         app:layout_anchorGravity="top|end"
         app:layout_anchor="@+id/item_detail_container"
+        android:padding="3dp"
         android:layout_margin="@dimen/fab_margin"
         android:textSize="22dp"
         android:textColor="#FFFFFF"
-        android:background="#FF4081"
+        android:background="#2f4554"
         android:text="ASSIGNED"/>
 
 </android.support.design.widget.CoordinatorLayout>

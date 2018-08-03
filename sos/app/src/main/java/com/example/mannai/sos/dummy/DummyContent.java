@@ -36,6 +36,11 @@ public class DummyContent {
         }
     }
 
+    public static  void clearItems(){
+        ITEMS.clear();
+        ITEM_MAP.clear();
+    }
+
     public static void addItem(DummyItem item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
@@ -71,7 +76,7 @@ public class DummyContent {
         public  String allergies="";
         public  String weight="";
         public  String remarks="";
-        public Date requested_at;
+        public String requested_at;
         public double latitude;
         public double longitude;
         public String req_id;
@@ -86,7 +91,7 @@ public class DummyContent {
             this.dob=d;
             this.location=l;
             this.condition=cnd;
-            this.requested_at = Calendar.getInstance().getTime();
+            //this.requested_at = Calendar.getInstance().getTime();
         }
 
         public DummyItem(String id, String n, String c, String d, String cnd, String l,
@@ -103,7 +108,7 @@ public class DummyContent {
             this.allergies=a;
             this.weight=w;
             this.remarks=r;
-            this.requested_at = Calendar.getInstance().getTime();
+            this.requested_at = ra;// Calendar.getInstance().getTime();
             this.latitude=lt;
             this.longitude=ln;
             this.req_id=req;
